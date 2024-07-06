@@ -6,28 +6,44 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 01:23:00 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/06 03:21:50 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/06 13:13:43 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "stdio.ft.h"
 #include <stdbool.h>
+#include <strings.h>
 
 bool	test(char *s)
 {
 	int	std;
 	int	ft;
 
-	printf("--- test %s ------------------\n", s);
 	std = printf(s);
 	ft = ft_printf(s);
-	printf("std:%d, ft:%d\n", std, ft);
+	printf("\nstd:%d, ft:%d\n", std, ft);
 	return (std == ft);
 }
 
 int	main(void)
 {
-	test("123456789\n");
-	test("ABCDEFGhig\n");
-	test("");
+	char	*cases[] = {													\
+		"1234567890",														\
+		"ABCDEFG", 															\
+		"vwxyz",															\
+		"",																	\
+		"EOF"																\
+	};
+	int		cnt;
+
+	cnt = 0;
+	while (strcmp(cases[cnt], "EOF"))
+	{
+		if (cnt != 0)
+			printf("--------------------------\n");
+		printf("Case%d: %s\n", cnt, cases[cnt]);
+		if (!test(cases[cnt]))
+			return (1);
+		cnt++;
+	}
 }
