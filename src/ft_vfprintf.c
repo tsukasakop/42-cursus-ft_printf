@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/20 02:56:19 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/20 02:59:55 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,21 @@ int print_c(FILE *s, char **f, va_list ap)
 	return (ft_fwrite(&c, 1, 1, s));
 }
 
+int print_s(FILE *s, char **f, va_list ap)
+{
+	++*f;
+	char *str = va_arg(ap, char*);
+	return (ft_fwrite(str, ft_strlen(str), 1, s));
+}
+
 int	print_fmt(FILE *s, char **f, va_list ap)
 {
 	if (**f == '%')
 		return (print_percent(s, f, ap));
 	if (**f == 'c')
 		return (print_c(s, f, ap));
+	if (**f == 's')
+		return (print_s(s, f, ap));
 	return (0);
 }
 
