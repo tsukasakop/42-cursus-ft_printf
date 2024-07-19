@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/06 03:13:48 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/16 10:37:00 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	ft_vfprintf(FILE *s, const char *format, va_list ap)
 	tmp = (char *)format;
 	while (*tmp != '\0')
 	{
-		fwrite(tmp, 1, 1, s);
+		ft_fwrite(tmp, 1, 1, s);
 		tmp++;
 		cnt++;
 	}
