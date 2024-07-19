@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/20 01:26:59 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/20 02:56:19 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,28 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
-int	print_percent(char **f, FILE *s)
+int	print_percent(FILE *s, char **f, va_list ap)
 {
 	++*f;
+	(void)ap;
 	return (ft_fwrite("%", 1, 1, s));
+}
+
+int print_c(FILE *s, char **f, va_list ap)
+{
+	++*f;
+	char c = va_arg(ap, int) & 0b1111111;
+	return (ft_fwrite(&c, 1, 1, s));
 }
 
 int	print_fmt(FILE *s, char **f, va_list ap)
 {
-	if (**fmt == '%')
-		return (print_percent(f, s));
-	(void)ap;
+	if (**f == '%')
+		return (print_percent(s, f, ap));
+	if (**f == 'c')
+		return (print_c(s, f, ap));
 	return (0);
 }
 
