@@ -6,7 +6,7 @@
 #    By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/19 08:09:35 by tkondo            #+#    #+#              #
-#    Updated: 2024/07/06 03:05:12 by tkondo           ###   ########.fr        #
+#    Updated: 2024/07/20 00:51:34 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,6 +47,8 @@ NAME = libftprintf.a
 all: $(NAME) ## Create the Library
 
 $(NAME): $(OBJ) ## Create the Library
+	make -C libft
+	cp ./libft/libft.a $(NAME)
 	ar rcs $(NAME) $(OBJ)
 
 bonus: ## Create Bonus Library
@@ -58,9 +60,11 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c ## Compile Source Files
 
 clean: ## Clean Only Object File Directory
 	rm -f $(OBJ_MND) $(OBJ_BNS)
+	make -C libft clean
 
 fclean: clean ## Full Clean 
 	rm -f $(NAME)
+	make -C libft fclean
 
 re: fclean all ## Re-Make
 
