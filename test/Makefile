@@ -6,7 +6,7 @@
 #    By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/06 02:35:33 by tkondo            #+#    #+#              #
-#    Updated: 2024/07/06 13:02:48 by tkondo           ###   ########.fr        #
+#    Updated: 2024/07/19 20:22:56 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,28 +17,28 @@ LIB = libftprintf.a
 CFLAGS = -I$(INCDIR) -L$(LIBDIR) -l$(LIBNAME) -g -fsanitize=address
 
 SRCDIR = src
-OUTDIR = bin
+CASEDIR = case
 SRCS = $(wildcard $(SRCDIR)/*.c)
-OUTS = $(SRCS:$(SRCDIR)/%.c=$(OUTDIR)/%.test)
 NAMES = $(SRCS:$(SRCDIR)/%.c=%)
+CSVS = $(wildcard $(CASEDIR)/*.csv)
+CASES = $(CSVS:$(CASEDIR)/%.csv=%)
 
-.PHONY = test all clean fclean re $(NAMES)
+OUT = ./bin/test-printf
+.PHONY = test all clean fclean re $(CASES)
 
 test: all
-	@./test_all.sh
 
-all: $(OUTS)
+all: $(CASES)
 
-$(NAMES): %: $(OUTDIR)/%.test
-	./$<
+$(CASES): %: $(OUT)
+	$(OUT) $(CASEDIR)/$@.csv
 
-$(OUTDIR)/%.test: $(SRCDIR)/%.c $(LIBDIR)/$(LIB)
-	@mkdir -p $(OUTDIR)
-	$(CC) $(CFLAGS) $< -o $@
+$(OUT): $(SRCS)
+	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
-	rm -r $(OUTDIR)
 
 fclean: clean
+	rm $(OUT) || true
 
 re: fclean all

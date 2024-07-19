@@ -1,48 +1,55 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   percent.c                                          :+:      :+:    :+:   */
+/*   test.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 01:23:00 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/06 13:54:40 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/19 20:16:22 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "test.h"
 #include "stdio.ft.h"
 #include <stdbool.h>
 #include <strings.h>
+#include <unistd.h>
 
-bool	test(char *s)
+void	putstr_caret(char *s)
+{
+	char c [2] = "^@";
+	while(1)
+	{
+		if(*s >= ' ' && *s <= '~')
+			write(1, s, 1);
+		else {
+			c[1] = ('@' + *s) & 127;
+			write(1, "\x1B[30;47m", 8);
+			write(1, c, 2);
+			write(1, "\x1B[0m", 4);
+			if(*s == '\0')
+				break;
+		}
+		s++;
+	}
+}
+
+void	test(char *str)
 {
 	int	std;
 	int	ft;
-
+	char *s = evaluate_escape_sequences(str);
+	printf("Case: ");
+	fflush(stdout);
+	putstr_caret(s);
+	printf("\n");
+	ft_printf("\x1B[31m");
 	std = printf(s);
+	ft_printf("\x1B[32m");
 	ft = ft_printf(s);
-	printf("\nstd:%d, ft:%d\n", std, ft);
-	return (std == ft);
-}
-
-int	main(void)
-{
-	char	*cases[] = {													\
-		"%%",																\
-		"%%%%",												\
-		"%%a%%w%%x%%y%%z%%",												\
-		"EOF"																\
-	};
-	int		cnt;
-	bool success = true;
-	cnt = 0;
-	while (strcmp(cases[cnt], "EOF"))
-	{
-		if (cnt != 0)
-			printf("--------------------------\n");
-		printf("Case%d: %s\n", cnt, cases[cnt]);
-		success = (success && !test(cases[cnt]));
-		cnt++;
-	}
-	return (!success);
+	printf("\x1B[0m");
+	char *result = std == ft ? "\x1B[32mSUCCESS\x1B[0m" : "\x1B[31mFAILUE\x1B[0m";
+	printf("\nresult: %s\n(ret) \x1B[31mstd\x1B[0m:%d, \x1B[32mft\x1B[0m:%d\n", result, std, ft);
+	free(s);
 }
