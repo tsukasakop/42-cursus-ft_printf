@@ -1,3 +1,5 @@
 build
 libftprintf.a
 test/bin
+**/*.swp
+.DS_Store
