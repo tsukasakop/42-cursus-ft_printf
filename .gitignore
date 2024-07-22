@@ -3,3 +3,4 @@ libftprintf.a
 test/bin
 **/*.swp
 .DS_Store
+libft/libft.a
