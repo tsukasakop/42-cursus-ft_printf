@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/24 12:53:54 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 01:15:06 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 static void	reset_fmt(t_fmt *fmt)
 {
+	fmt->prefix = NONE;
 	fmt->printlen = INT_MAX - 1;
 }
 
@@ -65,7 +66,7 @@ int	fprint_prefix(FILE *s, int pref)
 	return (0);
 }
 
-int	p(FILE *s, t_fmt *fmt, unsigned long long v)
+int	p(FILE *s, t_fmt *fmt, unsigned long long v, size_t size)
 {
 	int	cnt;
 	int	tmp;
@@ -73,50 +74,34 @@ int	p(FILE *s, t_fmt *fmt, unsigned long long v)
 	cnt = 0;
 	if (v / fmt->base)
 	{
-		tmp = p(s, fmt, v / fmt->base);
-		if (tmp == -1)
-			return (-1);
+		tmp = p(s, fmt, v / fmt->base, size - 1);
+		if (tmp == -1 || (size_t)tmp != size - 1) 
+			return (tmp);
 		cnt += tmp;
 	}
 	if (fmt->printlen)
 	{
 		tmp = ft_fputc(fmt->table(v), s);
-		if (tmp == -1)
-			return (-1);
+		if (tmp != 1)
+			return (tmp);
 		cnt += tmp;
 		fmt->printlen--;
 	}
 	return (cnt);
 }
 
-int	pa(FILE *s, t_fmt *fmt, unsigned long long *v)
-{
-	int	cnt;
-	int	tmp;
-
-	cnt = fprint_prefix(s, fmt->prefix);
-	if (cnt == -1)
-		return (-1);
-	tmp = p(s, fmt, *v);
-	if (tmp == -1)
-		return (-1);
-	return (cnt + tmp);
-}
-
-bool	get_val(unsigned long long **val, va_list ap, t_fmt *fmt, char conv)
+unsigned long long	get_val(va_list ap, t_fmt *fmt, char conv)
 {
 	int	v;
 
 	if (conv == '%')
-		**val = 0;
-	else if (conv == 'c')
-		**val = (unsigned long long)(unsigned char)va_arg(ap, unsigned int);
+		return 0;
 	else if (conv == 'u' || conv == 'x' || conv == 'X')
-		**val = (unsigned long long)va_arg(ap, unsigned int);
+		return (unsigned long long)va_arg(ap, unsigned int);
 	else if (conv == 'p')
 	{
 		fmt->prefix = LOWER_HEX;
-		**val = (unsigned long long)va_arg(ap, void *);
+		return (unsigned long long)va_arg(ap, void *);
 	}
 	else if (conv == 'd' || conv == 'i')
 	{
@@ -126,11 +111,9 @@ bool	get_val(unsigned long long **val, va_list ap, t_fmt *fmt, char conv)
 			fmt->prefix = MINUS;
 			v *= -1;
 		}
-		**val = (unsigned long long)(unsigned int)v;
+		return (unsigned long long)(unsigned int)v;
 	}
-	else
-		return (false);
-	return (true);
+	return 0;
 }
 
 void	set_base(unsigned char conv, t_fmt *fmt)
@@ -162,21 +145,34 @@ void	set_base(unsigned char conv, t_fmt *fmt)
 	}
 }
 
+size_t get_size(unsigned long long v, t_fmt *fmt)
+{
+	size_t size;size=1;
+	while(v / fmt->base)
+	{
+		size++;
+		v /= fmt->base;
+	}
+	return size;
+}
+
 int	print_fmt(FILE *s, char **f, va_list ap)
 {
 	t_fmt				fmt;
 	unsigned long long	v;
-	unsigned long long	*val;
 
 	reset_fmt(&fmt);
 	// set_fmt(f, ap, &fmt);
-	if (!ft_strchr("csdiupxX%", **f))
+	//if (**f == 's')
+	//	return putstr(va_arg(ap,char*));
+	if (!ft_strchr("cdiupxX%", **f))
 		return (0);
-	val = &v;
-	get_val(&val, ap, &fmt, **f);
+	v = get_val(ap, &fmt, **f);
 	set_base(**f, &fmt);
+	size_t size;size = get_size(v, &fmt);
 	++*f;
-	return (pa(s, &fmt, val));
+	fprint_prefix(s, fmt.prefix);
+	return (p(s, &fmt, v, size));
 }
 
 int	ft_vfprintf(FILE *s, const char *format, va_list ap)
@@ -190,7 +186,7 @@ int	ft_vfprintf(FILE *s, const char *format, va_list ap)
 	while (*tmp != '\0')
 	{
 		if (*tmp != '%')
-			_cnt = ft_fwrite(tmp++, 1, 1, s);
+			_cnt = ft_fputc(*tmp++, s);
 		else
 		{
 			++tmp;

@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 03:11:49 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/24 15:55:07 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/24 18:22:33 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <stdio.h>
 
 int					ft_fputc(int c, FILE *stream);
-ssize_t				ft_fwrite(const void *ptr, size_t size, size_t n_items,
+size_t				ft_fwrite(const void *ptr, size_t size, size_t n_items,
 						FILE *stream);
 int					ft_printf(const char *format, ...);
 int					ft_vfprintf(FILE *s, const char *format, va_list ap);
@@ -42,7 +42,6 @@ typedef enum e_printf_prefix
 	LOWER_HEX,    // "0x" for 'x' with '#' flag('X')
 	UPPER_HEX,    // "0x" for 'x' with '#' flag('X')
 	LOWER_HEX_ONE // "0x" for 'x' with '#' flag('X')
-		UNKNOWN
 }					t_printf_prefix;
 
 typedef struct s_fmt

@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 01:23:00 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/19 20:16:22 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/23 01:22:01 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ void	test(char *str)
 	fflush(stdout);
 	putstr_caret(s);
 	printf("\n");
-	ft_printf("\x1B[31m");
+	printf("\x1B[31m");
 	std = printf(s);
-	ft_printf("\x1B[32m");
+	printf("\x1B[32m");
 	ft = ft_printf(s);
 	printf("\x1B[0m");
 	char *result = std == ft ? "\x1B[32mSUCCESS\x1B[0m" : "\x1B[31mFAILUE\x1B[0m";

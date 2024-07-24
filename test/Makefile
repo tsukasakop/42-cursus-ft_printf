@@ -6,14 +6,14 @@
 #    By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/06 02:35:33 by tkondo            #+#    #+#              #
-#    Updated: 2024/07/19 20:22:56 by tkondo           ###   ########.fr        #
+#    Updated: 2024/07/20 01:21:46 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 INCDIR = ../include
 LIBDIR = ..
 LIBNAME = ftprintf
-LIB = libftprintf.a
+LIB = ../libftprintf.a
 CFLAGS = -I$(INCDIR) -L$(LIBDIR) -l$(LIBNAME) -g -fsanitize=address
 
 SRCDIR = src
@@ -33,8 +33,11 @@ all: $(CASES)
 $(CASES): %: $(OUT)
 	$(OUT) $(CASEDIR)/$@.csv
 
-$(OUT): $(SRCS)
+$(OUT): $(LIB) $(SRCS)
 	$(CC) $(CFLAGS) $^ -o $@
+
+$(LIB):
+	make -C ..
 
 clean:
 
