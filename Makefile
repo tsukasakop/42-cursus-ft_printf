@@ -6,7 +6,7 @@
 #    By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/19 08:09:35 by tkondo            #+#    #+#              #
-#    Updated: 2024/07/20 00:51:34 by tkondo           ###   ########.fr        #
+#    Updated: 2024/07/24 12:24:25 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,11 +24,13 @@ SRC_MND = \
   $(SRCDIR)/ft_printf.c\
   $(SRCDIR)/ft_vfprintf.c\
   $(SRCDIR)/ft_fwrite.c\
+  $(SRCDIR)/ft_fputc.c\
 
 SRC_BNS = \
   $(SRCDIR)/ft_printf.c\
   $(SRCDIR)/ft_vfprintf.c\
   $(SRCDIR)/ft_fwrite.c\
+  $(SRCDIR)/ft_fputc.c\
 
 # Object files
 OBJ_MND = $(SRC_MND:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
