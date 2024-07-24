@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 01:15:06 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 04:07:31 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,8 @@ unsigned long long	get_val(va_list ap, t_fmt *fmt, char conv)
 
 	if (conv == '%')
 		return 0;
+	if (conv == 'c')
+		return (unsigned long long)(unsigned char)va_arg(ap, unsigned int);
 	else if (conv == 'u' || conv == 'x' || conv == 'X')
 		return (unsigned long long)va_arg(ap, unsigned int);
 	else if (conv == 'p')
@@ -156,6 +158,17 @@ size_t get_size(unsigned long long v, t_fmt *fmt)
 	return size;
 }
 
+int ps(FILE *s, char *str, t_fmt *fmt)
+{
+	(void)fmt;
+	if (str == NULL)str = "(null)";
+	size_t size;size = ft_strlen(str);
+	size_t ret;ret = ft_fwrite(str, size, 1, s);
+	if(ret == 0)
+		return -1;
+	return size; 
+}
+
 int	print_fmt(FILE *s, char **f, va_list ap)
 {
 	t_fmt				fmt;
@@ -163,8 +176,10 @@ int	print_fmt(FILE *s, char **f, va_list ap)
 
 	reset_fmt(&fmt);
 	// set_fmt(f, ap, &fmt);
-	//if (**f == 's')
-	//	return putstr(va_arg(ap,char*));
+	if (**f == 's')
+	{++*f;
+		return ps(s, va_arg(ap,char*), &fmt);
+	}
 	if (!ft_strchr("cdiupxX%", **f))
 		return (0);
 	v = get_val(ap, &fmt, **f);

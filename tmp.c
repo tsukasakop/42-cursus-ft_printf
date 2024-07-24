@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 22:57:17 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 01:22:34 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 04:18:44 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,26 @@
 int main(int argc, char** argv)
 {
 	int (*f)(const char *,...);
-	f=printf;
+	f=printf;/*
+	printf(f("%c", '0');
+	f(" %c ", '0');
 	f(" %c", '0' - 256);
 	f("%c ", '0' + 256);
+	f(" %c", '0' - 256);
+	f("%c ", '0' + 256);
+	*/
+	f(" %p ", -1);
+	f(" %p ", 1);
+	f(" %p ", 15);
+	f(" %p ", 16);
+	f(" %p ", 17);
+	/*
+	f("%s\n", NULL);
+	f("%s", "");
+	f(" %s", "");
+	f("%s ", "");
+	f(" %s ", "");
+	f(" %s ", "-");
 	f("%d\n", INT_MAX);
 	f("%d\n", INT_MIN);
 	f("%d\n", LONG_MAX);
@@ -35,6 +52,7 @@ int main(int argc, char** argv)
 	f("%d\n", -42);
 	f("%c\n", '0');
 	f("%s\n", "123456789%d", 12);
+*/
 	//ft_printf("%p\n", NULL);
 	//printf("%p\n", NULL);
 	(void)argc;
