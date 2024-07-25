@@ -1,3 +1,4 @@
+**/*.o
 build
 libftprintf.a
 test/bin
