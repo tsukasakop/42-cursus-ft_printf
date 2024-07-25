@@ -6,13 +6,13 @@
 #    By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/19 08:09:35 by tkondo            #+#    #+#              #
-#    Updated: 2024/07/24 23:51:29 by tkondo           ###   ########.fr        #
+#    Updated: 2024/07/25 15:46:54 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # Compiler and compiling flags
 CC = cc
-CFLAGS = -g -Wall -Wextra -Werror
+CFLAGS = -g -fsanitize=address -Wall -Wextra -Werror
 
 # Directories
 SRCDIR = src

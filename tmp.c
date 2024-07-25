@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 22:57:17 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 12:20:07 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 18:10:50 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 int main(int argc, char** argv)
 {
 	int (*f)(const char *,...);
-	f=ft_printf;/*
+	f=printf;/*
 	printf(f("%c", '0');
 	f(" %c ", '0');
 	f(" %c", '0' - 256);

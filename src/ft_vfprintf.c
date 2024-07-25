@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 12:51:19 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 18:08:07 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 static void	reset_fmt(t_fmt *fmt)
 {
 	fmt->prefix = NONE;
-	fmt->printlen = INT_MAX - 1;
+	fmt->len = INT_MAX - 1;
 }
 
 int	percent_table(unsigned long long val)
@@ -86,35 +86,35 @@ int	p(FILE *s, t_fmt *fmt, unsigned long long v, size_t size)
 			return (tmp);
 		cnt += tmp;
 	}
-	if (fmt->printlen)
+	if (fmt->len)
 	{
 		tmp = ft_fputc(fmt->table(v), s);
 		if (tmp != 1)
 			return (tmp);
 		cnt += tmp;
-		fmt->printlen--;
+		fmt->len--;
 	}
 	return (cnt);
 }
 
-unsigned long long	get_val(va_list ap, t_fmt *fmt, char conv)
+void	set_val(va_list ap, t_fmt *fmt)
 {
 	int	v;
 
-	if (conv == '%')
-		return (0);
-	if (conv == 'c')
-		return (unsigned long long)(unsigned char)va_arg(ap, unsigned int);
-	if (conv == 's')
-		return (unsigned long long)(va_arg(ap, char *));
-	else if (conv == 'u' || conv == 'x' || conv == 'X')
-		return (unsigned long long)va_arg(ap, unsigned int);
-	else if (conv == 'p')
+	if (fmt->format == '%')
+		fmt->val = (0);
+	else if (fmt->format == 'c')
+		fmt->val = (unsigned long long)(unsigned char)va_arg(ap, unsigned int);
+	else if (fmt->format == 's')
+		fmt->val = (unsigned long long)(va_arg(ap, char *));
+	else if (ft_strchr("uxX", fmt->format))
+		fmt->val = (unsigned long long)va_arg(ap, unsigned int);
+	else if (fmt->format == 'p')
 	{
 		fmt->prefix = LOWER_HEX;
-		return (unsigned long long)va_arg(ap, void *);
+		fmt->val = (unsigned long long)va_arg(ap, void *);
 	}
-	else if (conv == 'd' || conv == 'i')
+	else if (ft_strchr("id", fmt->format))
 	{
 		v = va_arg(ap, int);
 		if (v < 0)
@@ -122,9 +122,8 @@ unsigned long long	get_val(va_list ap, t_fmt *fmt, char conv)
 			fmt->prefix = MINUS;
 			v *= -1;
 		}
-		return ((unsigned long long)(unsigned int)v);
+		fmt->val = ((unsigned long long)(unsigned int)v);
 	}
-	return (0);
 }
 
 void	set_base(unsigned char conv, t_fmt *fmt)
@@ -207,41 +206,72 @@ int	ps(FILE *s, char *str, t_fmt *fmt, size_t size)
 		return (-1);
 	return (size);
 }
-unsigned char eval_conv(unsigned char conv, t_fmt *fmt)
+void	eval_conv(unsigned char format, t_fmt *fmt)
 {
-	(void*)fmt;
-	return conv;
+	fmt->format = format;
+}
+
+int	get_digit(char **f)
+{
+	int	d;
+
+	d = 0;
+	while (**f >= 0 && **f <= 9)
+		d = d * 10 + *(*f)++ - '0';
+	return (d);
+}
+
+void	set_flag(char **f, t_flag *flag)
+{
+	char c;
+	return;
+	while (1)
+	{
+		c = *(*f)++;
+		if (c >= 1 && c <= 9)
+			flag->field = get_digit(--f);
+		else if (c == '.')
+			flag->precition = get_digit(f);
+		else if (c == ' ')
+			flag->flag[PUT_BLANK] = true;
+		else if (c == '+')
+			flag->flag[PUT_PLUS] = true;
+		else if (c == '-')
+			flag->flag[ADJUST_RIGHT] = true;
+		else if (c == '#')
+			flag->flag[ALTER_FORM] = true;
+		else if (c == '0')
+			flag->flag[PADDING_ZERO] = true;
+		else
+			return ;
+	}
 }
 
 int	print_fmt(FILE *s, char **f, va_list ap)
 {
-	t_fmt				fmt;
-	unsigned long long	v;
-	size_t				psize;
-	size_t				vsize;
-	int					tmp;
-	int					size;
-	int					conv;
+	t_fmt	fmt;
+	size_t	psize;
+	size_t	vsize;
+	int		tmp;
+	int		size;
 
+	//t_flag	flag;
 	reset_fmt(&fmt);
-	// set_fmt(f, ap, &fmt);
+	//set_flag(f, &flag);
 	if (!ft_strchr("csdiupxX%", **f))
 		return (0);
-	conv = eval_conv(*(*f)++);
-	v = get_val(ap, &fmt, conv);
-	set_base(conv, &fmt);
+	eval_conv(*(*f)++, &fmt);
+	set_val(ap, &fmt);
+	set_base(fmt.format, &fmt);
 	psize = get_psize(fmt.prefix);
-	vsize = get_vsize(v, &fmt, conv);
-	if (psize > INT_MAX - 1 - vsize)
+	vsize = get_vsize(fmt.val, &fmt, fmt.format);
+	size = fprint_prefix(s, fmt.prefix, psize);
+	if (size == -1)
 		return (-1);
-	tmp = fprint_prefix(s, fmt.prefix, psize);
-	if (tmp == -1)
-		return (-1);
-	size = tmp;
-	if (conv == 's')
-		tmp = ps(s, (char *)v, &fmt, vsize);
+	if (fmt.format == 's')
+		tmp = ps(s, (char *)fmt.val, &fmt, vsize);
 	else
-		tmp = p(s, &fmt, v, vsize);
+		tmp = p(s, &fmt, fmt.val, vsize);
 	if (tmp == -1)
 		return (-1);
 	return (size + tmp);
