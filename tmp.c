@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 22:57:17 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 04:18:44 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 11:22:05 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 int main(int argc, char** argv)
 {
 	int (*f)(const char *,...);
-	f=printf;/*
+	f=ft_printf;/*
 	printf(f("%c", '0');
 	f(" %c ", '0');
 	f(" %c", '0' - 256);
@@ -30,11 +30,11 @@ int main(int argc, char** argv)
 	f(" %c", '0' - 256);
 	f("%c ", '0' + 256);
 	*/
-	f(" %p ", -1);
-	f(" %p ", 1);
-	f(" %p ", 15);
-	f(" %p ", 16);
-	f(" %p ", 17);
+	printf("[%d]\n", f(" %p ", -1));
+	printf("[%d]\n", f(" %p ", 1));
+	printf("[%d]\n", f(" %p ", 15));
+	printf("[%d]\n", f(" %p ", 16));
+	printf("[%d]\n", f(" %p ", 17));
 	/*
 	f("%s\n", NULL);
 	f("%s", "");

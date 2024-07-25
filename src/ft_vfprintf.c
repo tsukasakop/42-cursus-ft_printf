@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 10:46:17 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 11:38:05 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,21 +49,26 @@ int	base256table(unsigned long long val)
 	return (val % 256);
 }
 
-int	fprint_prefix(FILE *s, int pref)
+int	fprint_prefix(FILE *s, int pref, size_t size)
 {
+	size_t ret;
 	if (pref == BLANK)
-		return (ft_fwrite(" ", 1, 1, s));
-	if (pref == PLUS)
-		return (ft_fwrite("+", 1, 1, s));
-	if (pref == MINUS)
-		return (ft_fwrite("-", 1, 1, s));
-	if (pref == LOWER_HEX)
-		return (ft_fwrite("0x", 2, 1, s));
-	if (pref == UPPER_HEX)
-		return (ft_fwrite("0X", 2, 1, s));
-	if (pref == LOWER_HEX_ONE)
-		return (ft_fwrite("0x1", 3, 1, s));
-	return (0);
+		ret = (ft_fwrite(" ", 1, size, s));
+	else if (pref == PLUS)
+		ret = (ft_fwrite("+", 1, size, s));
+	else if (pref == MINUS)
+		ret = (ft_fwrite("-", 1, size, s));
+	else if (pref == LOWER_HEX)
+		ret = (ft_fwrite("0x", 1, size, s));
+	else if (pref == UPPER_HEX)
+		ret = (ft_fwrite("0X", 1, size, s));
+	else if (pref == LOWER_HEX_ONE)
+		ret = (ft_fwrite("0x1", 1, size, s));
+	else ret = 0;
+	if(ret == size)
+		return ret;
+	else
+		return -1;
 }
 
 int	p(FILE *s, t_fmt *fmt, unsigned long long v, size_t size)
@@ -207,7 +212,7 @@ int	print_fmt(FILE *s, char **f, va_list ap)
 	if (psize > INT_MAX - 1 - vsize)
 		return -1;
 	++*f;
-	int tmp  = fprint_prefix(s, fmt.prefix);
+	int tmp  = fprint_prefix(s, fmt.prefix, psize);
 	if(tmp == -1)
 		return -1;
 	int size;size = tmp;
