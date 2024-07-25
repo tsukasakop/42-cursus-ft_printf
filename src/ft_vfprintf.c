@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 04:07:31 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 10:46:17 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,25 @@ void	set_base(unsigned char conv, t_fmt *fmt)
 	}
 }
 
-size_t get_size(unsigned long long v, t_fmt *fmt)
+size_t get_psize(t_printf_prefix prefix)
+{
+	size_t size;size=0;
+	
+	if (prefix == BLANK)
+		size++;
+	if (prefix == PLUS)
+		size++;
+	if (prefix == MINUS)
+		size++;
+	if (prefix == LOWER_HEX)
+		size+=2;
+	if (prefix == UPPER_HEX)
+		size+=2;
+	if (prefix == LOWER_HEX_ONE)
+		size+=3;
+	return size;
+}
+size_t get_vsize(unsigned long long v, t_fmt *fmt)
 {
 	size_t size;size=1;
 	while(v / fmt->base)
@@ -184,10 +202,19 @@ int	print_fmt(FILE *s, char **f, va_list ap)
 		return (0);
 	v = get_val(ap, &fmt, **f);
 	set_base(**f, &fmt);
-	size_t size;size = get_size(v, &fmt);
+	size_t psize;psize = get_psize(fmt.prefix);
+	size_t vsize;vsize = get_vsize(v, &fmt);
+	if (psize > INT_MAX - 1 - vsize)
+		return -1;
 	++*f;
-	fprint_prefix(s, fmt.prefix);
-	return (p(s, &fmt, v, size));
+	int tmp  = fprint_prefix(s, fmt.prefix);
+	if(tmp == -1)
+		return -1;
+	int size;size = tmp;
+	tmp = p(s, &fmt, v, vsize);
+	if(tmp == -1)
+		return -1;
+	return size + tmp;
 }
 
 int	ft_vfprintf(FILE *s, const char *format, va_list ap)
