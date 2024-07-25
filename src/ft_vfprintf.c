@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 12:35:19 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 12:51:19 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,11 @@ int	ps(FILE *s, char *str, t_fmt *fmt, size_t size)
 		return (-1);
 	return (size);
 }
+unsigned char eval_conv(unsigned char conv, t_fmt *fmt)
+{
+	(void*)fmt;
+	return conv;
+}
 
 int	print_fmt(FILE *s, char **f, va_list ap)
 {
@@ -222,8 +227,7 @@ int	print_fmt(FILE *s, char **f, va_list ap)
 	// set_fmt(f, ap, &fmt);
 	if (!ft_strchr("csdiupxX%", **f))
 		return (0);
-	conv = **f;
-	++*f;
+	conv = eval_conv(*(*f)++);
 	v = get_val(ap, &fmt, conv);
 	set_base(conv, &fmt);
 	psize = get_psize(fmt.prefix);
