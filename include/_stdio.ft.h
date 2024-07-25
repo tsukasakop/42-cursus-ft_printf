@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 03:11:49 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/24 18:22:33 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 11:50:48 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,23 +25,23 @@ int					ft_vfprintf(FILE *s, const char *format, va_list ap);
 
 typedef enum e_prinf_flag
 {
-	PADDING_ZERO, // for '-'
-	ADJUST_RIGHT, // for '0'
-	PUT_BLANK,    // for ' '
-	PUT_PLUS,     // for '+'
-	ALTER_FORM,   // for '#'
+	PADDING_ZERO,
+	ADJUST_RIGHT,
+	PUT_BLANK,
+	PUT_PLUS,
+	ALTER_FORM,
 	UPPERCASE
 }					t_printf_flag;
 
 typedef enum e_printf_prefix
 {
 	NONE,
-	BLANK,        // " " for ' ' flag
-	PLUS,         // "+" for '+' flag
-	MINUS,        //
-	LOWER_HEX,    // "0x" for 'x' with '#' flag('X')
-	UPPER_HEX,    // "0x" for 'x' with '#' flag('X')
-	LOWER_HEX_ONE // "0x" for 'x' with '#' flag('X')
+	BLANK,
+	PLUS,
+	MINUS,
+	LOWER_HEX,
+	UPPER_HEX,
+	LOWER_HEX_ONE
 }					t_printf_prefix;
 
 typedef struct s_fmt

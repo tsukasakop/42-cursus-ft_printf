@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 12:19:13 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 11:18:10 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/25 11:45:51 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,5 +18,5 @@ int	ft_fputc(int c, FILE *stream)
 	unsigned char	uc;
 
 	uc = (unsigned char)c;
-	return ft_fwrite(&uc, 1, 1, stream) * 2 -1;
+	return (ft_fwrite(&uc, 1, 1, stream) * 2 - 1);
 }
