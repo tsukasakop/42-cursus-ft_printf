@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 18:08:07 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/28 02:13:00 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,12 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-static void	reset_fmt(t_fmt *fmt)
+static void	reset_fmt(t_fmt *fmt, va_list ap)
 {
+	ft_bzero(fmt, sizeof(t_fmt));
 	fmt->prefix = NONE;
-	fmt->len = INT_MAX - 1;
+	fmt->ap = ap;
+	//fmt->len = INT_MAX - 1;
 }
 
 int	percent_table(unsigned long long val)
@@ -49,7 +51,7 @@ int	base256table(unsigned long long val)
 	return (val % 256);
 }
 
-int	fprint_prefix(FILE *s, int pref, size_t size)
+int	fprint_prefix(FILE *s, t_printf_prefix pref, size_t size)
 {
 	size_t	ret;
 
@@ -75,50 +77,47 @@ int	fprint_prefix(FILE *s, int pref, size_t size)
 
 int	p(FILE *s, t_fmt *fmt, unsigned long long v, size_t size)
 {
-	int	cnt;
-	int	tmp;
+	int	chi_cnt;
+	int	cur_cnt;
 
-	cnt = 0;
-	if (v / fmt->base)
-	{
-		tmp = p(s, fmt, v / fmt->base, size - 1);
-		if (tmp == -1 || (size_t)tmp != size - 1)
-			return (tmp);
-		cnt += tmp;
-	}
-	if (fmt->len)
-	{
-		tmp = ft_fputc(fmt->table(v), s);
-		if (tmp != 1)
-			return (tmp);
-		cnt += tmp;
-		fmt->len--;
-	}
-	return (cnt);
+	if (size == 0)
+		return 0;
+	chi_cnt = p(s, fmt, v / fmt->base, size - 1);
+	if (chi_cnt == -1 || chi_cnt >= INT_MAX - 1)
+		return -1;
+	if ((size_t)chi_cnt != size - 1)
+		return (chi_cnt);
+	cur_cnt = ft_fputc(fmt->table(v), s);
+	if (cur_cnt == -1)
+		return (-1);
+	if (cur_cnt == 0)
+		return (chi_cnt);
+	return (chi_cnt + cur_cnt);
 }
 
-void	set_val(va_list ap, t_fmt *fmt)
+void	set_val(va_list ap, t_fmt *fmt, char c)
 {
 	int	v;
 
-	if (fmt->format == '%')
-		fmt->val = (0);
-	else if (fmt->format == 'c')
+	if (c == '%')
+		fmt->val = '%';
+	else if (c == 'c')
 		fmt->val = (unsigned long long)(unsigned char)va_arg(ap, unsigned int);
-	else if (fmt->format == 's')
+	else if (c == 's')
 		fmt->val = (unsigned long long)(va_arg(ap, char *));
-	else if (ft_strchr("uxX", fmt->format))
+	else if (ft_strchr("uxX", c))
 		fmt->val = (unsigned long long)va_arg(ap, unsigned int);
-	else if (fmt->format == 'p')
+	else if (c == 'p')
 	{
 		fmt->prefix = LOWER_HEX;
 		fmt->val = (unsigned long long)va_arg(ap, void *);
 	}
-	else if (ft_strchr("id", fmt->format))
+	else if (ft_strchr("id", c))
 	{
 		v = va_arg(ap, int);
 		if (v < 0)
 		{
+			fmt->pref_len = 1;
 			fmt->prefix = MINUS;
 			v *= -1;
 		}
@@ -126,29 +125,19 @@ void	set_val(va_list ap, t_fmt *fmt)
 	}
 }
 
-void	set_base(unsigned char conv, t_fmt *fmt)
+void	set_base(t_fmt *fmt, char c)
 {
-	if (conv == '%')
-	{
-		fmt->base = 1;
-		fmt->table = percent_table;
-	}
-	if (conv == 'c')
-	{
-		fmt->base = 256;
-		fmt->table = base256table;
-	}
-	if (conv == 'd' || conv == 'i' || conv == 'u')
+	if (ft_strchr("diu", c) != NULL)
 	{
 		fmt->base = 10;
 		fmt->table = dec_table;
 	}
-	if (conv == 'x' || conv == 'p')
+	else if (ft_strchr("xp", c) != NULL)
 	{
 		fmt->base = 16;
 		fmt->table = lower_hex_table;
 	}
-	if (conv == 'X')
+	else if (c == 'X')
 	{
 		fmt->base = 16;
 		fmt->table = upper_hex_table;
@@ -175,23 +164,33 @@ size_t	get_psize(t_printf_prefix prefix)
 	return (size);
 }
 
-size_t	get_vsize(unsigned long long v, t_fmt *fmt, unsigned char conv)
+void	set_vsize(t_fmt *fmt, t_flag *flag)
 {
-	size_t	size;
+	unsigned long long v;
 
-	if (conv == 's')
+	v = fmt->val;
+	if (fmt->val_type == STR)
 	{
-		if (v == 0)
-			return (ft_strlen("(null)"));
-		return (ft_strlen((const char *)v));
-	};
-	size = 1;
-	while (v / fmt->base)
-	{
-		size++;
-		v /= fmt->base;
+		if(v == 0)
+			fmt->val_len = ft_strlen("(null)");
+		else
+			fmt->val_len = ft_strlen((const char *)v);
+		if(flag->flag[PRECITION] && (int)fmt->val_len > flag->precition)
+			fmt->val_len = flag->precition;
 	}
-	return (size);
+	else if (fmt->val_type == CHAR)
+		fmt->val_len = 1;
+	else
+	{
+		fmt->val_len = 1;
+		while (v / fmt->base)
+		{
+			fmt->val_len++;
+			v /= fmt->base;
+		}
+		if(flag->flag[PRECITION] && ((int)fmt->val_len < flag->precition))
+			fmt->val_len = flag->precition;
+	}
 }
 
 int	ps(FILE *s, char *str, t_fmt *fmt, size_t size)
@@ -206,17 +205,13 @@ int	ps(FILE *s, char *str, t_fmt *fmt, size_t size)
 		return (-1);
 	return (size);
 }
-void	eval_conv(unsigned char format, t_fmt *fmt)
-{
-	fmt->format = format;
-}
 
 int	get_digit(char **f)
 {
 	int	d;
 
 	d = 0;
-	while (**f >= 0 && **f <= 9)
+	while (**f >= '0' && **f <= '9')
 		d = d * 10 + *(*f)++ - '0';
 	return (d);
 }
@@ -224,14 +219,14 @@ int	get_digit(char **f)
 void	set_flag(char **f, t_flag *flag)
 {
 	char c;
-	return;
 	while (1)
 	{
 		c = *(*f)++;
-		if (c >= 1 && c <= 9)
-			flag->field = get_digit(--f);
-		else if (c == '.')
+		if (c == '.')
+		{
+			flag->flag[PRECITION] = true;
 			flag->precition = get_digit(f);
+		}
 		else if (c == ' ')
 			flag->flag[PUT_BLANK] = true;
 		else if (c == '+')
@@ -243,38 +238,120 @@ void	set_flag(char **f, t_flag *flag)
 		else if (c == '0')
 			flag->flag[PADDING_ZERO] = true;
 		else
-			return ;
+		{
+			--*f;
+			if (c >= '1' && c <= '9')
+				flag->field = get_digit(f);
+			else
+				return ;
+		}
 	}
+}
+
+void set_pref(char c, t_flag *flag, t_fmt *fmt)
+{
+	if(ft_strchr("di", c) != NULL)
+	{
+		if(fmt->prefix == MINUS)
+			;
+		else if (flag->flag[PUT_PLUS])
+			fmt->prefix = PLUS;
+		else if (flag->flag[PUT_BLANK])
+			fmt->prefix = BLANK;
+		else
+			return;
+		fmt->pref_len = 1;
+	}
+	else if(ft_strchr("xX", c) && flag->flag[ALTER_FORM])
+	{
+		if(c == 'x')
+			fmt->prefix = LOWER_HEX;
+		if(c == 'X')
+			fmt->prefix = UPPER_HEX;
+		fmt->pref_len = 2;
+	}
+	else if(c == 'p')
+	{
+		fmt->prefix = LOWER_HEX;
+		fmt->pref_len = 2;
+	}
+}
+
+void	trim_flag(t_flag *flag, t_fmt *fmt)
+{
+	if (flag->flag[PUT_PLUS])
+		flag->flag[PUT_BLANK] = false;
+	if (flag->flag[ADJUST_RIGHT])
+		flag->flag[PADDING_ZERO] = false;
+	if (flag->precition > 0 && fmt->val_type == NUM)
+		flag->flag[PADDING_ZERO] = false;
+}
+
+void set_pad(t_fmt *fmt, t_flag *flag)
+{
+	if((size_t)flag->field <= fmt->val_len || flag->field - fmt->val_len <= fmt->pref_len)
+		;
+	else if(flag->flag[PADDING_ZERO])
+		fmt->val_len = flag->field - fmt->pref_len;
+	else
+	{
+		fmt->pad_len = flag->field - fmt->pref_len - fmt->val_len;
+		fmt->align_left = flag->flag[ADJUST_RIGHT];
+	}
+}
+
+void calc_fmt(char c, t_flag *flag, t_fmt *fmt, va_list ap)
+{
+	if(c == 'c')
+		fmt->val_type = CHAR;
+	else if(c =='s')
+		fmt->val_type = STR;
+	else
+		fmt->val_type = NUM;
+	trim_flag(flag, fmt);
+	set_pref(c,flag, fmt);
+	set_val(ap, fmt, c);
+	if (fmt->val_type == NUM)
+		set_base(fmt, c);
+	set_vsize(fmt, flag);
+	set_pad(fmt, flag);
 }
 
 int	print_fmt(FILE *s, char **f, va_list ap)
 {
 	t_fmt	fmt;
-	size_t	psize;
-	size_t	vsize;
+	int		cnt;
 	int		tmp;
 	int		size;
 
-	//t_flag	flag;
-	reset_fmt(&fmt);
-	//set_flag(f, &flag);
+	cnt = 0;
+	t_flag	flag;
+	ft_bzero(&flag, sizeof(t_flag));
+	set_flag(f, &flag);
 	if (!ft_strchr("csdiupxX%", **f))
 		return (0);
-	eval_conv(*(*f)++, &fmt);
-	set_val(ap, &fmt);
-	set_base(fmt.format, &fmt);
-	psize = get_psize(fmt.prefix);
-	vsize = get_vsize(fmt.val, &fmt, fmt.format);
-	size = fprint_prefix(s, fmt.prefix, psize);
+	reset_fmt(&fmt, ap);
+	calc_fmt(*(*f)++, &flag, &fmt, ap);
+	while (!fmt.align_left && cnt < (int)fmt.pad_len)
+	{
+		cnt++;
+		ft_fputc(' ',s);
+	}
+	size = fprint_prefix(s, fmt.prefix, fmt.pref_len);
 	if (size == -1)
 		return (-1);
-	if (fmt.format == 's')
-		tmp = ps(s, (char *)fmt.val, &fmt, vsize);
+	if (fmt.val_type == STR)
+		tmp = ps(s, (char *)fmt.val, &fmt, fmt.val_len);
 	else
-		tmp = p(s, &fmt, fmt.val, vsize);
+		tmp = p(s, &fmt, fmt.val, fmt.val_len);
 	if (tmp == -1)
 		return (-1);
-	return (size + tmp);
+	while (fmt.align_left && cnt < (int)fmt.pad_len)
+	{
+		cnt++;
+		ft_fputc(' ',s);
+	}
+	return (cnt + size + tmp);
 }
 
 int	ft_vfprintf(FILE *s, const char *format, va_list ap)
