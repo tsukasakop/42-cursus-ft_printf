@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 03:11:49 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/27 23:16:36 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/28 06:33:12 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ typedef struct s_fmt
 	size_t				val_len;
 	unsigned int		base;
 	int					(*table)(unsigned long long);
-	va_list				ap;
+	va_list				*ap;
 }						t_fmt;
 
 #endif
