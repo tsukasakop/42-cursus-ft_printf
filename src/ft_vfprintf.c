@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/28 02:13:00 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/28 06:21:41 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,7 +302,7 @@ void set_pad(t_fmt *fmt, t_flag *flag)
 
 void calc_fmt(char c, t_flag *flag, t_fmt *fmt, va_list ap)
 {
-	if(c == 'c')
+	if(ft_strchr("c%", c) != NULL)
 		fmt->val_type = CHAR;
 	else if(c =='s')
 		fmt->val_type = STR;
@@ -342,6 +342,8 @@ int	print_fmt(FILE *s, char **f, va_list ap)
 		return (-1);
 	if (fmt.val_type == STR)
 		tmp = ps(s, (char *)fmt.val, &fmt, fmt.val_len);
+	else if(fmt.val_type == CHAR)
+		tmp = ft_fputc(fmt.val, s);
 	else
 		tmp = p(s, &fmt, fmt.val, fmt.val_len);
 	if (tmp == -1)
