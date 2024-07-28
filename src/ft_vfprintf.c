@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/28 06:37:57 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/28 15:40:06 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,8 +309,13 @@ void calc_fmt(char c, t_flag *flag, t_fmt *fmt)
 	else
 		fmt->val_type = NUM;
 	trim_flag(flag, fmt);
-	set_pref(c,flag, fmt);
+	set_pref(c, flag, fmt);
 	set_val(fmt, c);
+	if (ft_strchr("xX", c) && fmt->val == 0)
+	{
+		fmt->prefix = NONE;
+		fmt->pref_len = 0;
+	}
 	if (fmt->val_type == NUM)
 		set_base(fmt, c);
 	set_vsize(fmt, flag);

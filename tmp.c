@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 22:57:17 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/28 06:22:07 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/07/28 15:39:24 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,15 @@ int main(int argc, char** argv)
 	int (*f)(const char *,...);
 	f=ft_printf;/*
 	*/
-	f("%10%");
+	f("[%d]\n", f(" %#x ", 0));
+	f("[%d]\n", f(" %#x ", LONG_MIN));
+	f("[%d]\n", f(" %#x %#x %#x %#x %#x %#x %#x", INT_MAX, INT_MIN, LONG_MAX,LONG_MIN, ULONG_MAX, 0, -42));
+	f("[%d]\n", f(" %#X ", 0));
+	f("[%d]\n", f(" %#X ", LONG_MIN));
+	f("[%d]\n", f(" %#X %#X %#X %#X %#X %#X %#X", INT_MAX, INT_MIN, LONG_MAX,LONG_MIN, ULONG_MAX, 0, -42));
 	/*
+	f("%10%");
+
 	//f("[%d]\n", f("%-1s", "S"));
 	f("[%d]\n", f(" %-2s", "S"));
 	f("[%d]\n", f("%-3sy", "S"));
