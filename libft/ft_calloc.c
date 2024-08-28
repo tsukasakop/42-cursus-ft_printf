@@ -6,12 +6,12 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 11:55:56 by tkondo            #+#    #+#             */
-/*   Updated: 2024/05/09 05:08:48 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/08/25 16:26:13 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include <limits.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 void	*ft_calloc(size_t count, size_t size)
