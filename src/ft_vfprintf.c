@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/28 15:40:06 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/08/25 15:45:01 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-static void	reset_fmt(t_fmt *fmt, va_list *ap)
+static void	reset_fmt(t_fmt *fmt, va_list ap)
 {
 	ft_bzero(fmt, sizeof(t_fmt));
 	fmt->prefix = NONE;
-	fmt->ap = ap;
+	va_copy(fmt->ap, ap);
 	//fmt->len = INT_MAX - 1;
 }
 
@@ -102,19 +102,19 @@ void	set_val(t_fmt *fmt, char c)
 	if (c == '%')
 		fmt->val = '%';
 	else if (c == 'c')
-		fmt->val = (unsigned long long)(unsigned char)va_arg(*(fmt->ap), unsigned int);
+		fmt->val = (unsigned long long)(unsigned char)va_arg(fmt->ap, unsigned int);
 	else if (c == 's')
-		fmt->val = (unsigned long long)(va_arg(*(fmt->ap), char *));
+		fmt->val = (unsigned long long)(va_arg(fmt->ap, char *));
 	else if (ft_strchr("uxX", c))
-		fmt->val = (unsigned long long)va_arg(*(fmt->ap), unsigned int);
+		fmt->val = (unsigned long long)va_arg(fmt->ap, unsigned int);
 	else if (c == 'p')
 	{
 		fmt->prefix = LOWER_HEX;
-		fmt->val = (unsigned long long)va_arg(*(fmt->ap), void *);
+		fmt->val = (unsigned long long)va_arg(fmt->ap, void *);
 	}
 	else if (ft_strchr("id", c))
 	{
-		v = va_arg(*(fmt->ap), int);
+		v = va_arg(fmt->ap, int);
 		if (v < 0)
 		{
 			fmt->pref_len = 1;
@@ -322,7 +322,7 @@ void calc_fmt(char c, t_flag *flag, t_fmt *fmt)
 	set_pad(fmt, flag);
 }
 
-int	print_fmt(FILE *s, char **f, va_list *ap)
+int	print_fmt(FILE *s, char **f, va_list ap)
 {
 	t_fmt	fmt;
 	int		cnt;
@@ -376,7 +376,7 @@ int	ft_vfprintf(FILE *s, const char *format, va_list ap)
 		else
 		{
 			++tmp;
-			_cnt = print_fmt(s, &tmp, &ap);
+			_cnt = print_fmt(s, &tmp, ap);
 		}
 		if (_cnt == -1 || cnt >= INT_MAX - _cnt)
 			return (-1);
