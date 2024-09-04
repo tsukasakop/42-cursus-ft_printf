@@ -6,13 +6,13 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 15:50:13 by tkondo            #+#    #+#             */
-/*   Updated: 2024/08/25 16:22:47 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/08/28 22:42:49 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "_stdio.h"
+#include "_stdio.ft.h"
 
 int	ft_fileno(FILE *stream)
 {
-	return (0);
+	return stream->_fileno;
 }
