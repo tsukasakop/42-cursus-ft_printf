@@ -18,5 +18,5 @@ int	ft_fputc(int c, FILE *stream)
 	unsigned char	uc;
 
 	uc = (unsigned char)c;
-	return (ft_fwrite(&uc, 1, 1, stream) * 2 - 1);
+	return (ft_fwrite((const char *)&uc, 1, 1, stream) * 2 - 1);
 }

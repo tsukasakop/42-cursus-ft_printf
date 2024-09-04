@@ -6,14 +6,14 @@
 #    By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/19 08:09:35 by tkondo            #+#    #+#              #
-#    Updated: 2024/07/25 20:00:17 by tkondo           ###   ########.fr        #
+#    Updated: 2024/09/04 23:06:21 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # Compiler and compiling flags
 CC = cc
+CFLAGS = -Wall -Wextra -Werror
 #CFLAGS = -g -fsanitize=address -Wall -Wextra -Werror
-CFLAGS = -g -Wall -Wextra -Werror
 
 # Directories
 SRCDIR = src
@@ -26,12 +26,14 @@ SRC_MND = \
   $(SRCDIR)/ft_vfprintf.c\
   $(SRCDIR)/ft_fwrite.c\
   $(SRCDIR)/ft_fputc.c\
+  $(SRCDIR)/ft_fileno.c\
 
 SRC_BNS = \
   $(SRCDIR)/ft_printf.c\
   $(SRCDIR)/ft_vfprintf.c\
   $(SRCDIR)/ft_fwrite.c\
   $(SRCDIR)/ft_fputc.c\
+  $(SRCDIR)/ft_fileno.c\
 
 # Object files
 OBJ_MND = $(SRC_MND:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

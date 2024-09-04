@@ -25,6 +25,9 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <stdint.h>
+# define OPEN_MAX 255
+
 /**
  * Function: get_next_line
  *

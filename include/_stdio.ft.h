@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 03:11:49 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/28 06:33:12 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/08/25 16:22:12 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ size_t					ft_fwrite(const void *ptr, size_t size, size_t n_items,
 							FILE *stream);
 int						ft_printf(const char *format, ...);
 int						ft_vfprintf(FILE *s, const char *format, va_list ap);
+int						ft_fileno(FILE *s);
 
 # define N_PRINTF_FLAGS 6
 
@@ -71,7 +72,7 @@ typedef struct s_fmt
 	size_t				val_len;
 	unsigned int		base;
 	int					(*table)(unsigned long long);
-	va_list				*ap;
+	va_list				ap;
 }						t_fmt;
 
 #endif
