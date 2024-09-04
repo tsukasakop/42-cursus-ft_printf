@@ -24,7 +24,7 @@ size_t	ft_fwrite(const void *ptr, size_t size, size_t n_items, FILE *stream)
 	cnt = 0;
 	while (cnt < n_items)
 	{
-		writen = write(fn, ptr + cnt, size);
+		writen = write(fn, ptr + size * cnt, size);
 		if (writen < 0 || (size_t)writen < size)
 			break ;
 		cnt++;
