@@ -6,7 +6,7 @@
 #    By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/06 02:35:33 by tkondo            #+#    #+#              #
-#    Updated: 2024/07/20 01:21:46 by tkondo           ###   ########.fr        #
+#    Updated: 2024/09/04 23:21:50 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,7 @@ $(CASES): %: $(OUT)
 	$(OUT) $(CASEDIR)/$@.csv
 
 $(OUT): $(LIB) $(SRCS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $^ -o $@ $(CFLAGS)
 
 $(LIB):
 	make -C ..
