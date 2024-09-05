@@ -6,18 +6,16 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/09/05 16:49:13 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/09/05 20:50:28 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "_stdio.ft.h"
 
-static void	reset_fmt(t_fmt *fmt, va_list ap)
+static void	reset_fmt(t_fmt *fmt)
 {
 	ft_bzero(fmt, sizeof(t_fmt));
 	fmt->prefix = NONE;
-	va_copy(fmt->ap, ap);
-	//fmt->len = INT_MAX - 1;
 }
 
 int	percent_table(unsigned long long val)
@@ -90,26 +88,26 @@ int	p(t_FILE *s, t_fmt *fmt, unsigned long long v, size_t size)
 	return (chi_cnt + cur_cnt);
 }
 
-void	set_val(t_fmt *fmt, char c)
+void	set_val(t_fmt *fmt, char c, va_list ap)
 {
 	int	v;
 
 	if (c == '%')
 		fmt->val = '%';
 	else if (c == 'c')
-		fmt->val = (unsigned long long)(unsigned char)va_arg(fmt->ap, unsigned int);
+		fmt->val = (unsigned long long)(unsigned char)va_arg(ap, unsigned int);
 	else if (c == 's')
-		fmt->val = (unsigned long long)(va_arg(fmt->ap, char *));
+		fmt->val = (unsigned long long)(va_arg(ap, char *));
 	else if (ft_strchr("uxX", c))
-		fmt->val = (unsigned long long)va_arg(fmt->ap, unsigned int);
+		fmt->val = (unsigned long long)va_arg(ap, unsigned int);
 	else if (c == 'p')
 	{
 		fmt->prefix = LOWER_HEX;
-		fmt->val = (unsigned long long)va_arg(fmt->ap, void *);
+		fmt->val = (unsigned long long)va_arg(ap, void *);
 	}
 	else if (ft_strchr("id", c))
 	{
-		v = va_arg(fmt->ap, int);
+		v = va_arg(ap, int);
 		if (v < 0)
 		{
 			fmt->pref_len = 1;
@@ -295,7 +293,7 @@ void set_pad(t_fmt *fmt, t_flag *flag)
 	}
 }
 
-void calc_fmt(char c, t_flag *flag, t_fmt *fmt)
+void calc_fmt(char c, t_flag *flag, t_fmt *fmt, va_list ap)
 {
 	if(ft_strchr("c%", c) != NULL)
 		fmt->val_type = CHAR;
@@ -305,7 +303,7 @@ void calc_fmt(char c, t_flag *flag, t_fmt *fmt)
 		fmt->val_type = NUM;
 	trim_flag(flag, fmt);
 	set_pref(c, flag, fmt);
-	set_val(fmt, c);
+	set_val(fmt, c, ap);
 	if (ft_strchr("xX", c) && fmt->val == 0)
 	{
 		fmt->prefix = NONE;
@@ -330,8 +328,8 @@ int	print_fmt(t_FILE *s, char **f, va_list ap)
 	set_flag(f, &flag);
 	if (!ft_strchr("csdiupxX%", **f))
 		return (0);
-	reset_fmt(&fmt, ap);
-	calc_fmt(*(*f)++, &flag, &fmt);
+	reset_fmt(&fmt);
+	calc_fmt(*(*f)++, &flag, &fmt, ap);
 	while (!fmt.align_left && cnt < (int)fmt.pad_len)
 	{
 		cnt++;
