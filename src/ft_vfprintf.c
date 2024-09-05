@@ -6,16 +6,11 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/08/25 15:45:01 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/09/05 16:49:13 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "_stdio.ft.h"
-#include "libft.h"
-#include <limits.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdlib.h>
 
 static void	reset_fmt(t_fmt *fmt, va_list ap)
 {
@@ -51,7 +46,7 @@ int	base256table(unsigned long long val)
 	return (val % 256);
 }
 
-int	fprint_prefix(FILE *s, t_printf_prefix pref, size_t size)
+int	fprint_prefix(t_FILE *s, t_printf_prefix pref, size_t size)
 {
 	size_t	ret;
 
@@ -75,7 +70,7 @@ int	fprint_prefix(FILE *s, t_printf_prefix pref, size_t size)
 		return (-1);
 }
 
-int	p(FILE *s, t_fmt *fmt, unsigned long long v, size_t size)
+int	p(t_FILE *s, t_fmt *fmt, unsigned long long v, size_t size)
 {
 	int	chi_cnt;
 	int	cur_cnt;
@@ -193,7 +188,7 @@ void	set_vsize(t_fmt *fmt, t_flag *flag)
 	}
 }
 
-int	ps(FILE *s, char *str, t_fmt *fmt, size_t size)
+int	ps(t_FILE *s, char *str, t_fmt *fmt, size_t size)
 {
 	size_t	ret;
 
@@ -322,7 +317,7 @@ void calc_fmt(char c, t_flag *flag, t_fmt *fmt)
 	set_pad(fmt, flag);
 }
 
-int	print_fmt(FILE *s, char **f, va_list ap)
+int	print_fmt(t_FILE *s, char **f, va_list ap)
 {
 	t_fmt	fmt;
 	int		cnt;
@@ -361,7 +356,7 @@ int	print_fmt(FILE *s, char **f, va_list ap)
 	return (cnt + size + tmp);
 }
 
-int	ft_vfprintf(FILE *s, const char *format, va_list ap)
+int	ft_vfprintf(t_FILE *s, const char *format, va_list ap)
 {
 	int		cnt;
 	ssize_t	_cnt;

@@ -6,14 +6,13 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 12:19:13 by tkondo            #+#    #+#             */
-/*   Updated: 2024/07/25 11:45:51 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/09/05 16:46:15 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "_stdio.ft.h"
-#include <stdio.h>
 
-int	ft_fputc(int c, FILE *stream)
+int	ft_fputc(int c, t_FILE *stream)
 {
 	unsigned char	uc;
 

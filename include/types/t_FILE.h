@@ -1,18 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_fileno.c                                        :+:      :+:    :+:   */
+/*   FILE.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/25 15:50:13 by tkondo            #+#    #+#             */
-/*   Updated: 2024/09/05 16:36:41 by tkondo           ###   ########.fr       */
+/*   Created: 2024/09/05 16:35:05 by tkondo            #+#    #+#             */
+/*   Updated: 2024/09/05 17:07:30 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "_stdio.ft.h"
+#ifndef T_FILE_H
+# define T_FILE_H
 
-int	ft_fileno(t_FILE *stream)
+typedef struct s_FILE
 {
-	return stream->_fileno;
-}
+	int	_fileno;
+}		t_FILE;
+
+#endif
