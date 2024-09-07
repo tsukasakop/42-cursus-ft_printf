@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/09/08 01:37:22 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/09/08 02:03:57 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,17 +287,15 @@ void set_pad(t_fmt *fmt, t_flag *flag)
 	}
 }
 
-t_fmt *calc_fmt(char **f, va_list ap)
+bool calc_fmt(t_fmt *fmt, char **f, va_list ap)
 {
 	t_flag	flag;
 	char c;
 	ft_bzero(&flag, sizeof(t_flag));
 	set_flag(f, &flag);
 	if (**f == '\0' || ft_strchr("csdiupxX%", **f) == NULL)
-		return NULL;
-	t_fmt *fmt;
+		return false;
 	c = *(*f)++;
-	fmt = ft_calloc(1, sizeof(t_fmt));
 	ft_bzero(fmt, sizeof(t_fmt));
 	fmt->prefix = NONE;
 	if(ft_strchr("c%", c) != NULL)
@@ -318,7 +316,7 @@ t_fmt *calc_fmt(char **f, va_list ap)
 		set_base(fmt, c);
 	set_vsize(fmt, &flag);
 	set_pad(fmt, &flag);
-	return fmt;
+	return true;
 }
 
 #include <stdio.h>
@@ -330,9 +328,16 @@ int	print_fmt(t_FILE *s, char **f, va_list ap)
 	int		size;
 
 	cnt = 0;
-	fmt = calc_fmt(f, ap);
+	fmt = ft_calloc(1, sizeof(t_fmt));
 	if(fmt==NULL)
 		return -1;
+	if(!calc_fmt(fmt, f, ap))
+	{
+		free(fmt);
+		if (**f != '\0')
+			cnt = ft_fputc('%', s);
+		return cnt*2-1;
+	}
 	while (!fmt->align_left && cnt < (int)fmt->pad_len)
 	{
 		cnt++;
@@ -374,8 +379,6 @@ int	ft_vfprintf(t_FILE *s, const char *format, va_list ap)
 		{
 			++tmp;
 			_cnt = print_fmt(s, &tmp, ap);
-			if (_cnt == -1 && *tmp != '\0')
-				_cnt = ft_fputc('%', s);
 		}
 		if (_cnt == -1 || cnt >= INT_MAX - _cnt)
 			return (-1);
