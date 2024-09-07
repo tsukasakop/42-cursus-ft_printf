@@ -6,17 +6,11 @@
 /*   By: tkondo <tkondo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 22:41:55 by tkondo            #+#    #+#             */
-/*   Updated: 2024/09/05 20:50:28 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/09/08 01:37:22 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "_stdio.ft.h"
-
-static void	reset_fmt(t_fmt *fmt)
-{
-	ft_bzero(fmt, sizeof(t_fmt));
-	fmt->prefix = NONE;
-}
 
 int	percent_table(unsigned long long val)
 {
@@ -293,16 +287,27 @@ void set_pad(t_fmt *fmt, t_flag *flag)
 	}
 }
 
-void calc_fmt(char c, t_flag *flag, t_fmt *fmt, va_list ap)
+t_fmt *calc_fmt(char **f, va_list ap)
 {
+	t_flag	flag;
+	char c;
+	ft_bzero(&flag, sizeof(t_flag));
+	set_flag(f, &flag);
+	if (**f == '\0' || ft_strchr("csdiupxX%", **f) == NULL)
+		return NULL;
+	t_fmt *fmt;
+	c = *(*f)++;
+	fmt = ft_calloc(1, sizeof(t_fmt));
+	ft_bzero(fmt, sizeof(t_fmt));
+	fmt->prefix = NONE;
 	if(ft_strchr("c%", c) != NULL)
 		fmt->val_type = CHAR;
 	else if(c =='s')
 		fmt->val_type = STR;
 	else
 		fmt->val_type = NUM;
-	trim_flag(flag, fmt);
-	set_pref(c, flag, fmt);
+	trim_flag(&flag, fmt);
+	set_pref(c, &flag, fmt);
 	set_val(fmt, c, ap);
 	if (ft_strchr("xX", c) && fmt->val == 0)
 	{
@@ -311,46 +316,45 @@ void calc_fmt(char c, t_flag *flag, t_fmt *fmt, va_list ap)
 	}
 	if (fmt->val_type == NUM)
 		set_base(fmt, c);
-	set_vsize(fmt, flag);
-	set_pad(fmt, flag);
+	set_vsize(fmt, &flag);
+	set_pad(fmt, &flag);
+	return fmt;
 }
 
+#include <stdio.h>
 int	print_fmt(t_FILE *s, char **f, va_list ap)
 {
-	t_fmt	fmt;
+	t_fmt	*fmt;
 	int		cnt;
 	int		tmp;
 	int		size;
 
 	cnt = 0;
-	t_flag	flag;
-	ft_bzero(&flag, sizeof(t_flag));
-	set_flag(f, &flag);
-	if (!ft_strchr("csdiupxX%", **f))
-		return (0);
-	reset_fmt(&fmt);
-	calc_fmt(*(*f)++, &flag, &fmt, ap);
-	while (!fmt.align_left && cnt < (int)fmt.pad_len)
+	fmt = calc_fmt(f, ap);
+	if(fmt==NULL)
+		return -1;
+	while (!fmt->align_left && cnt < (int)fmt->pad_len)
 	{
 		cnt++;
 		ft_fputc(' ',s);
 	}
-	size = fprint_prefix(s, fmt.prefix, fmt.pref_len);
+	size = fprint_prefix(s, fmt->prefix, fmt->pref_len);
 	if (size == -1)
 		return (-1);
-	if (fmt.val_type == STR)
-		tmp = ps(s, (char *)fmt.val, &fmt, fmt.val_len);
-	else if(fmt.val_type == CHAR)
-		tmp = ft_fputc(fmt.val, s);
+	if (fmt->val_type == STR)
+		tmp = ps(s, (char *)fmt->val, fmt, fmt->val_len);
+	else if(fmt->val_type == CHAR)
+		tmp = ft_fputc(fmt->val, s);
 	else
-		tmp = p(s, &fmt, fmt.val, fmt.val_len);
+		tmp = p(s, fmt, fmt->val, fmt->val_len);
 	if (tmp == -1)
 		return (-1);
-	while (fmt.align_left && cnt < (int)fmt.pad_len)
+	while (fmt->align_left && cnt < (int)fmt->pad_len)
 	{
 		cnt++;
 		ft_fputc(' ',s);
 	}
+	free(fmt);
 	return (cnt + size + tmp);
 }
 
@@ -370,6 +374,8 @@ int	ft_vfprintf(t_FILE *s, const char *format, va_list ap)
 		{
 			++tmp;
 			_cnt = print_fmt(s, &tmp, ap);
+			if (_cnt == -1 && *tmp != '\0')
+				_cnt = ft_fputc('%', s);
 		}
 		if (_cnt == -1 || cnt >= INT_MAX - _cnt)
 			return (-1);
